@@ -1,0 +1,25 @@
+{
+  "name": "Mi Bolsa de Horas",
+  "short_name": "Mi Bolsa",
+  "description": "Calendario personal de fichajes y bolsa de horas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "file_handlers": [
+    {
+      "action": "./?open=timemoto",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.ms-excel": [".xls"]
+      }
+    }
+  ],
+  "launch_handler": {"client_mode":"navigate-existing"}
+}

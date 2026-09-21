@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mi Bolsa">
+  <meta name="description" content="Control personal de fichajes, calendario y bolsa de horas.">
+  <title>Mi Bolsa · Control horario</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-tab="calendar" aria-label="Ir al calendario">
+        <span class="brand-mark">B+</span>
+        <span><b>Mi Bolsa</b><small>Control horario personal</small></span>
+      </button>
+      <div class="top-actions">
+        <button class="icon-btn" id="timemotoBtn" title="TimeMoto" aria-label="Abrir asistente TimeMoto">T</button>
+        <button class="icon-btn" id="quickAddBtn" title="Añadir día" aria-label="Añadir día">＋</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="view-calendar">
+        <section class="balance-hero">
+          <div>
+            <span class="hero-label">Bolsa acumulada</span>
+            <div class="hero-balance" id="totalBalance">+0:54</div>
+            <div class="hero-sub" id="heroSub">Saldo inicial</div>
+          </div>
+          <div class="hero-side">
+            <div class="mini-stat"><span>Esta semana</span><b id="weekBalance">+0:00</b></div>
+            <div class="mini-stat"><span>Este mes</span><b id="monthBalance">+0:00</b></div>
+          </div>
+          <button class="hero-import" id="heroImportBtn">Importar TimeMoto</button>
+        </section>
+
+        <button class="pending-banner hidden" id="pendingReasonsBtn">
+          <span class="pending-icon">✎</span>
+          <span><b id="pendingReasonsText">0 extras sin motivo</b><small>Añade el motivo para dejar el histórico completo</small></span>
+          <span>›</span>
+        </button>
+
+        <section class="calendar-card">
+          <div class="calendar-head">
+            <div>
+              <div class="eyebrow">Calendario</div>
+              <h1 id="calendarTitle">Septiembre 2026</h1>
+            </div>
+            <div class="calendar-controls">
+              <button class="round-btn" id="prevMonth" aria-label="Mes anterior">‹</button>
+              <button class="today-btn" id="todayBtn">Hoy</button>
+              <button class="round-btn" id="nextMonth" aria-label="Mes siguiente">›</button>
+            </div>
+          </div>
+
+          <div class="month-kpis">
+            <div><span>Trabajado</span><b id="monthWorked">0:00</b></div>
+            <div><span>Objetivo</span><b id="monthTarget">0:00</b></div>
+            <div><span>Balance</span><b id="monthNet">+0:00</b></div>
+            <div><span>Días</span><b id="monthDays">0</b></div>
+          </div>
+
+          <div class="weekdays" aria-hidden="true">
+            <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+          <div class="calendar-legend">
+            <span><i class="dot positive"></i>Más horas</span>
+            <span><i class="dot negative"></i>Menos horas</span>
+            <span><i class="dot neutral"></i>Cuadrado</span>
+            <span><i class="note-dot"></i>Con nota</span>
+          </div>
+        </section>
+
+        <section class="recent-section">
+          <div class="section-title"><div><span class="eyebrow">Actividad</span><h2>Últimos días</h2></div><button class="text-btn" data-tab="history">Ver todo</button></div>
+          <div id="recentList" class="day-list"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="page-head"><div><span class="eyebrow">Histórico</span><h1>Todos los fichajes</h1></div><button class="primary-btn compact" id="historyImportBtn">Importar</button></div>
+        <div class="filter-card">
+          <input id="historySearch" type="search" placeholder="Buscar en notas o motivos…">
+          <div class="chips" id="historyFilters">
+            <button class="chip active" data-filter="all">Todos</button>
+            <button class="chip" data-filter="extra">Extras</button>
+            <button class="chip" data-filter="deficit">Déficit</button>
+            <button class="chip" data-filter="notes">Con notas</button>
+          </div>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+
+      <section class="view" id="view-stats">
+        <div class="page-head"><div><span class="eyebrow">Estadísticas</span><h1>Tu evolución</h1></div><select class="year-select" id="statsYear"></select></div>
+        <div class="stats-grid">
+          <div class="stat-card"><span>Horas trabajadas</span><strong id="statsWorked">0:00</strong></div>
+          <div class="stat-card"><span>Horas extra</span><strong class="positive-text" id="statsExtra">+0:00</strong></div>
+          <div class="stat-card"><span>Déficit</span><strong class="negative-text" id="statsDeficit">-0:00</strong></div>
+          <div class="stat-card"><span>Neto del año</span><strong id="statsNet">+0:00</strong></div>
+        </div>
+        <section class="panel">
+          <div class="section-title"><div><span class="eyebrow">Por mes</span><h2>Balance mensual</h2></div></div>
+          <div id="monthlyChart" class="monthly-chart"></div>
+        </section>
+        <section class="panel">
+          <div class="section-title"><div><span class="eyebrow">Resumen</span><h2>Mes a mes</h2></div></div>
+          <div id="monthlyTable" class="monthly-table"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="page-head"><div><span class="eyebrow">Configuración</span><h1>Ajustes</h1></div></div>
+        <section class="panel settings-panel">
+          <h2>Jornada objetivo</h2>
+          <p>Se usa para calcular automáticamente el saldo de cada día.</p>
+          <div class="schedule-grid" id="scheduleGrid"></div>
+        </section>
+        <section class="panel settings-panel">
+          <h2>Control de la bolsa</h2>
+          <div class="form-grid two">
+            <label><span>Saldo inicial</span><input id="settingOpening" type="text" inputmode="numeric" placeholder="+0:54"></label>
+            <label><span>Contabilizar desde</span><input id="settingStart" type="date"></label>
+          </div>
+          <button class="primary-btn" id="saveSettingsBtn">Guardar ajustes</button>
+        </section>
+        <section class="panel settings-panel">
+          <h2>TimeMoto</h2>
+          <p>La app no guarda tu usuario ni contraseña. Abre TimeMoto en una pestaña segura y luego importa el Excel descargado.</p>
+          <label class="full-field"><span>URL de TimeMoto</span><input id="settingTimemotoUrl" type="url"></label>
+          <div class="button-row"><button class="secondary-btn" id="settingsTimemotoBtn">Abrir asistente</button></div>
+        </section>
+        <section class="panel settings-panel">
+          <h2>Datos y copia de seguridad</h2>
+          <p>Los datos se guardan en este navegador. Exporta una copia si vas a cambiar de dispositivo.</p>
+          <div class="button-grid">
+            <button class="secondary-btn" id="exportBackupBtn">Exportar copia JSON</button>
+            <button class="secondary-btn" id="importBackupBtn">Importar copia JSON</button>
+            <button class="secondary-btn" id="exportCsvBtn">Exportar histórico CSV</button>
+            <button class="danger-btn" id="resetBtn">Restablecer app</button>
+          </div>
+          <input type="file" id="backupInput" accept="application/json,.json" hidden>
+        </section>
+        <section class="panel settings-panel install-panel" id="installPanel">
+          <h2>Instalar como app</h2>
+          <p id="installHelp">Puedes añadir Mi Bolsa a la pantalla de inicio para abrirla como una app.</p>
+          <button class="primary-btn" id="installBtn">Instalar / ver instrucciones</button>
+        </section>
+        <div class="privacy-note">Tus Excel se procesan localmente en el dispositivo. No se suben a un servidor de Mi Bolsa.</div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item active" data-tab="calendar"><span>▦</span><small>Calendario</small></button>
+      <button class="nav-item" data-tab="history"><span>☷</span><small>Histórico</small></button>
+      <button class="nav-item" data-tab="stats"><span>↗</span><small>Estadísticas</small></button>
+      <button class="nav-item" data-tab="settings"><span>⚙</span><small>Ajustes</small></button>
+    </nav>
+  </div>
+
+  <input type="file" id="excelInput" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+
+  <dialog id="timemotoDialog">
+    <div class="dialog-card wizard-card">
+      <div class="dialog-head">
+        <div><span class="eyebrow">Importación guiada</span><h2>Traer fichajes de TimeMoto</h2></div>
+        <button class="close-btn" data-close="timemotoDialog">×</button>
+      </div>
+      <div class="wizard-steps">
+        <div class="wizard-step"><span>1</span><div><b>Abre TimeMoto</b><p>Inicia sesión. La contraseña nunca pasa por Mi Bolsa.</p></div></div>
+        <div class="wizard-step"><span>2</span><div><b>Exporta el informe</b><p>Ve al informe por período / timesheet, usa vista por día y pulsa <b>Exportar → Excel</b>.</p></div></div>
+        <div class="wizard-step"><span>3</span><div><b>Vuelve y selecciónalo</b><p>El navegador no permite que una web lea automáticamente las descargas de otra web. Al volver, pulsa “Elegir Excel descargado”.</p></div></div>
+      </div>
+      <div class="timemoto-status" id="timemotoStatus">Listo para abrir TimeMoto.</div>
+      <div class="dialog-actions stacked-mobile">
+        <a class="secondary-btn link-btn" id="openTimemotoLink" href="https://cloud.timemoto.com" target="_blank" rel="noopener">Abrir TimeMoto ↗</a>
+        <button class="primary-btn" id="chooseAfterTimemotoBtn">Elegir Excel descargado</button>
+      </div>
+      <div class="drop-zone" id="dropZone"><b>En ordenador también puedes arrastrar aquí el Excel</b><span>.xlsx / .xls</span></div>
+      <p class="microcopy">En navegadores compatibles, si instalas la PWA y abres un .xlsx con “Mi Bolsa”, intentaremos importarlo directamente.</p>
+    </div>
+  </dialog>
+
+  <dialog id="importPreviewDialog">
+    <div class="dialog-card">
+      <div class="dialog-head"><div><span class="eyebrow">Revisar importación</span><h2 id="previewTitle">Excel TimeMoto</h2></div><button class="close-btn" data-close="importPreviewDialog">×</button></div>
+      <div class="preview-summary" id="previewSummary"></div>
+      <div class="preview-days" id="previewDays"></div>
+      <div class="dialog-actions"><button class="secondary-btn" data-close="importPreviewDialog">Cancelar</button><button class="primary-btn" id="confirmImportBtn">Importar días</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="dayDialog">
+    <form class="dialog-card" id="dayForm">
+      <div class="dialog-head"><div><span class="eyebrow" id="dayEyebrow">Detalle diario</span><h2 id="dayTitle">Día</h2></div><button type="button" class="close-btn" data-close="dayDialog">×</button></div>
+
+      <div class="day-summary" id="daySummary"></div>
+      <div class="clockings-box hidden" id="clockingsBox"><div class="subhead">Fichajes importados</div><div id="clockingsList"></div></div>
+
+      <div class="form-grid two day-fields">
+        <label><span>Fecha</span><input id="dDate" type="date" required></label>
+        <label><span>Tipo de día</span><select id="dType"><option value="work">Trabajo</option><option value="vacation">Vacaciones</option><option value="holiday">Festivo</option><option value="sick">Baja</option><option value="leave">Permiso</option><option value="other">Otro / no computa</option></select></label>
+        <label><span>Worked Hours (bruto)</span><input id="dWorked" type="text" inputmode="numeric" placeholder="08:30"></label>
+        <label><span>Break total</span><input id="dBreak" type="text" inputmode="numeric" placeholder="00:30"></label>
+        <label><span>Ausencia computable</span><input id="dAbsence" type="text" inputmode="numeric" placeholder="00:00"></label>
+        <label><span>Objetivo</span><select id="dTargetMode"><option value="auto">Según jornada</option><option value="zero">No computa (0:00)</option><option value="custom">Personalizado</option></select></label>
+        <label class="hidden" id="customTargetField"><span>Objetivo personalizado</span><input id="dCustomTarget" type="text" inputmode="numeric" placeholder="08:00"></label>
+        <label class="wide"><span>Motivo de horas extra</span><input id="dExtraReason" type="text" maxlength="140" placeholder="Ej. incidencia producción, despliegue, reunión…"></label>
+        <label class="wide"><span>Nota del día</span><textarea id="dNote" rows="3" maxlength="500" placeholder="Cualquier contexto que quieras conservar…"></textarea></label>
+      </div>
+      <div class="source-note" id="daySource"></div>
+      <div class="dialog-actions split-actions"><button type="button" class="danger-text-btn" id="deleteDayBtn">Eliminar día</button><div><button type="button" class="secondary-btn" data-close="dayDialog">Cancelar</button><button type="submit" class="primary-btn">Guardar</button></div></div>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog">
+    <div class="dialog-card small-dialog"><div class="dialog-head"><h2 id="confirmTitle">Confirmar</h2><button class="close-btn" data-close="confirmDialog">×</button></div><p id="confirmText"></p><div class="dialog-actions"><button class="secondary-btn" data-close="confirmDialog">Cancelar</button><button class="danger-btn" id="confirmDangerBtn">Confirmar</button></div></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
